@@ -1,43 +1,51 @@
 
- function getRandomHexColor() {
-            return `#${Math.floor(Math.random() * 16777215)
-                .toString(16)
-                .padStart(6, '0')}`;
-        }
+const input = document.querySelector('#controls input');
+const createButton = document.querySelector('[data-create]');
+const destroyButton = document.querySelector('[data-destroy]');
+const boxesContainer = document.querySelector('#boxes');
 
-        const controls = document.getElementById('controls');
-        const input = controls.querySelector('input');
-        const destroyButton = controls.querySelector('[data-destroy]');
-        const createButton = controls.querySelector('[data-create]');
-        const boxesContainer = document.getElementById('boxes');
+createButton.addEventListener('click', onButtonClick);
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    onButtonClick();
+  }
+});
+destroyButton.addEventListener('click', destroyBoxes);
 
-        destroyButton.addEventListener('click', destroyAndCreateBoxes);
-        createButton.addEventListener('click', destroyAndCreateBoxes);
+function onButtonClick() {
+  const amount = input.value;
+  if (amount > 0 && amount <= 100) {
+    return createBoxes(amount);
+  } else input.value = '';
+}
+function destroyBoxes() {
+  boxesContainer.innerHTML = '';
+}
 
-        function destroyAndCreateBoxes() {
-            boxesContainer.innerHTML = '';
-            if (event.target === destroyButton) {
-                return;
-            }
+function createBoxes(amount) {
+  boxesContainer.innerHTML = '';
+  const cardArray = Array.from(
+    { length: amount },
+    (item) => (item = '<div class="card"></div>'),
+  ).join('\n\n');
 
-            const amount = Number(input.value);
+  boxesContainer.insertAdjacentHTML('afterbegin', cardArray);
 
-            if (amount < 1 || amount > 100 || isNaN(amount)) {
-                alert('Please enter a number between 1 and 100.');
-                return;
-            }
+  const cardStyle = Array.from(document.querySelectorAll('.card'));
+  let width = 30;
+  let height = 30;
+  for (let i = 0; i < cardStyle.length; i++) {
+    cardStyle[i].style.width = `${width}px`;
+    cardStyle[i].style.height = `${height}px`;
+    cardStyle[i].style.backgroundColor = getRandomHexColor();
+    width += 10;
+    height += 10;
+  }
+  input.value = '';
+}
 
-            const boxes = [];
-
-            for (let i = 0; i < amount; i++) {
-                const box = document.createElement('div');
-                box.classList.add('box');
-                box.style.width = `${30 + i * 10}px`;
-                box.style.height = `${30 + i * 10}px`;
-                box.style.backgroundColor = getRandomHexColor();
-                boxes.push(box);
-            }
-
-            boxesContainer.append(...boxes);
-            input.value = '';
-        }
+function getRandomHexColor() {
+  return `#${Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, 0)}`;
+}
